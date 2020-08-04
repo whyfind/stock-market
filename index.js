@@ -3,7 +3,7 @@ console.log('你好啊！my name is dorsey');
 const https = require('https');
 const cheerio = require('cheerio');
 
-let url = 'https://sns.sseinfo.com/';
+let url = 'https://sns.sseinfo.com/ajax/feeds.do?page=1&type=10&pageSize=10&lastid=-1&show=1&_=1596535665526';
 
 var htmlTest = 'ceshi'
 https.get(url, function (res) {
@@ -25,8 +25,8 @@ https.get(url, function (res) {
             arr.push('<p>' + $(v).find('.m_feed_txt').html()+'</p>')
         })
         let result = [];
-
-        htmlTest = 111
+        console.log(arr.join(''))
+        htmlTest = 'ces'
     });
 });
 
@@ -38,7 +38,7 @@ app.use('/public', express.static('public'));
 //  主页输出 "Hello World"
 app.get('/', function (req, res) {
     console.log("主页 GET 请求");
-    res.sendStatus(htmlTest);
+    res.send(htmlTest);
 })
 
 
