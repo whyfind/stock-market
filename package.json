@@ -1,23 +1,31 @@
 {
-  "name": "stock-market",
-  "version": "1.0.0",
-  "description": "stock market",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "main.js",
+  "name": "HelloWorld",
+  "nodejs": true,
+  "single-instance": true,
+  "window": {
+    "title": "HelloWorld",
+    "width": 800,
+    "height": 600,
+    "icon": "logo.png",
+    "position": "center",
+    "min_width": 0,
+    "min_height": 0,
+    "max_width": 0,
+    "max_height": 0,
+    "resizable": true,
+    "always_on_top": false,
+    "fullscreen": false,
+    "show_in_taskbar": true,
+    "frame": true,
+    "show": true,
+    "kiosk": false,
+    "transparent": false
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/whyfind/stock-market.git"
+  "webkit": {
+    "plugin": true
   },
-  "author": "废废",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/whyfind/stock-market/issues"
-  },
-  "homepage": "https://github.com/whyfind/stock-market#readme",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "express": "^4.17.1"
+  "devDependencies": {
+    "pkg": "^4.4.9"
   }
 }
