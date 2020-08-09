@@ -60,7 +60,7 @@ var getHistoryId = function(){
 
 var getFilterArray = function(){
     var str = getFilter()
-    str = str.split(',')
+    str = str.split(' ')
     return str
 }
 
