@@ -8,7 +8,7 @@ var fs = require("fs")
 
 
 
-var createNotify = "<script>" +
+var createNotify = "<script>let audio = document.createElement('audio');audio.src = '/dog.mp3';document.body.appendChild(audio);" +
 "Notification.requestPermission(res =>{ console.log(res); });"+
 "function createNotify(title,options) {\n" +
     "\n" +
@@ -80,7 +80,7 @@ var renderListFilter = function(list){
         var notify = function(v){
             historyId[v.type] = historyId[v.type] || []
             historyId[v.type].push(v.id)
-            notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);"
+            notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);audio.play();"
         }
         v.question = v.question || ''
         v.text = v.text || ''
@@ -192,7 +192,7 @@ var getShenZhenHtml = function (callback) {
 var express = require('express');
 const { isNumber } = require('util');
 var app = express();
-app.use('/public', express.static('public'));
+app.use(express.static('./public'));
 
 app.get('/ShangHai', function (req, res) {
     console.log("ShangHai 交易所 请求");
