@@ -71,7 +71,7 @@ var renderListFilter = function(list){
     list.forEach(function (v, index) {
         var renderPush = function(v){
             var code = v.code ? '('+v.code +')' : ''
-            arr.push('<p>' + '<h1>' + v.title + code +'</h1>' + v.text +'</p>')
+            arr.push('<p>' + '<h1>' + v.title + code +'</h1>' + v.text +'<p style="color: #1818fd;">'+ (v.time || '') +'</p></p>')
         }
         var notify = function(v){
             historyId[v.type] = historyId[v.type] || []
@@ -102,7 +102,8 @@ var renderListFilter = function(list){
         console.log("--------我是分割线-------------")
         console.log("读取写入的数据！");
     });
-    htmlTest = arr.length ? (arr.join('') + createNotify + notification) : '<h1 style="text-align: center;">暂无关键字匹配的数据。</h1>';
+    var con = '<div style="width: 60%;">' + arr.join('') + '</div>';
+    htmlTest = arr.length ? (con + createNotify + notification) : '<h1 style="text-align: center;">暂无关键字匹配的数据。</h1>';
 }
 
 var getShangHaiHtml = function (callback) {
@@ -126,7 +127,8 @@ var getShangHaiHtml = function (callback) {
                     title: $(v).find('.m_qa_detail .m_feed_txt a').html(),
                     text: $(v).find('.m_qa .m_feed_txt').html(),
                     id: $(v).find('.m_qa .m_feed_txt').attr('id').split('-')[1],
-                    type: 'ShangHai'
+                    type: 'ShangHai',
+                    time: $(v).find('.m_qa .m_feed_from').html(),
                 })
             })
             renderListFilter(list)
@@ -160,7 +162,8 @@ var getShenZhenHtml = function (callback) {
                     code: v.stockCode,
                     text: v.attachedContent,
                     id: v.esId,
-                    type: 'ShenZhen'
+                    type: 'ShenZhen',
+                    time: v.packageDate
                 })
             })
             renderListFilter(list)
