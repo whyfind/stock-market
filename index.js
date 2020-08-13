@@ -179,6 +179,7 @@ var getShenZhenHtml = function (callback) {
             let data = Buffer.concat(chunks, size);
             var list = []
             JSON.parse(data).results.forEach(function (v) {
+                console.log(v.attachedContent)
                 list.push({
                     title: v.companyShortName,
                     code: v.stockCode,
