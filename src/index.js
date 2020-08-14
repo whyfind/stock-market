@@ -24,26 +24,21 @@ var renderListFilter = function(list){
     var notification = "<script>"
     var webConfig = util.getWebConfig()
     list.forEach(function (v, index) {
-        var renderPush = function(v){
-            var code = v.code ? '('+v.code +')' : ''
-            var title = '<h1>' + (index + 1) + '、' + v.title + code +'</h1>'
-            var question = '<p><h2 style="float:left;margin:0;">问：</h2>'+ '<p style="line-height: 35px;font-size: 18px;">' +(v.question || "") + '</p</p>'
-            var text = '<p><h2 style="float:left;margin:0;">答：</h2>'+ '<p style="line-height: 35px;font-size: 18px;">' + (v.text || "") +'</p></p>'
-            var time = '<p style="color: #1818fd;">'+ (v.time || '') +'</p>'
-            arr.push('<div style="border-bottom: 1px dashed #999;">' + title + question + text + time + '</div>')
-        }
+        v.code =  v.code ? '('+v.code +')' : ''
+        v.index = index + 1
+        v.question = v.question || ''
+        v.text = v.text || ''
+
         var notify = function(v){
             webConfig[v.type] = webConfig[v.type] || []
             webConfig[v.type].push(v.id)
             notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);" +
         'var myVideo=document.getElementById("myAudio");myVideo.addEventListener("canplay",function(){myVideo.play();});'
         }
-        v.question = v.question || ''
-        v.text = v.text || ''
 
         //如果没有设置过滤关键词
         if(!webConfig.filter){
-            renderPush(v)
+            arr.push(v)
         }else{
            var filter = webConfig.filter.split(" ")
            var defaultFilter = webConfig.defaultFilter.split(" ")
@@ -57,7 +52,7 @@ var renderListFilter = function(list){
 
                //问题当中有关键词
                 if(v.question.indexOf(item) >= 0 || v.text.indexOf(item) >= 0){
-                    renderPush(v)
+                    arr.push(v)
                     //(没有历史记录 或者 没有历史通知) 并且 回答中不包含
                     if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0) && !flag){
                         notify(v)
@@ -73,11 +68,12 @@ var renderListFilter = function(list){
     var reload = '<script>setTimeout(function(){window.location.reload()},'+ time +');</script>'
 
     util.setWebConfig(webConfig)
-    var con = '<div>' + arr.join('') + '</div>';
-    var html = arr.length ? (con + notification + reload ) : '<h1 style="text-align: center;">暂无关键字匹配的数据。</h1>';
+    var html = notification + reload;
     var template = util.getTemplate(path.resolve(__dirname, './index.html'))
     let $ = cheerio.load(template, { decodeEntities: false });
-    $('#root').append(html)
+    var con = handlebars.compile($("#listTemplate").html())({list: arr});
+
+    $('#root').append(html + con)
     return $.html()
 }
 
