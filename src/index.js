@@ -6,62 +6,23 @@ const request = require('request');
 var querystring = require('querystring');
 var fs = require("fs")
 
+var util = require('./utils/util');
+var ajax = require('./utils/http');
+var path = require("path")
+var handlebars = require("handlebars")
+
 var express = require('express');
 const { isNumber } = require('util');
 var app = express();
-app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, './public')));
+app.use(express.static(path.join(__dirname, './css')));
 
-
-var createNotify = "<script>" +
-"Notification.requestPermission(res =>{ console.log(res); });"+
-"function createNotify(title,options) {\n" +
-    "\n" +
-    "    var PERMISSON_GRANTED = 'granted';\n" +
-    "    var PERMISSON_DENIED = 'denied';\n" +
-    "    var PERMISSON_DEFAULT = 'default';\n" +
-    "\n" +
-    "    if (Notification.permission === PERMISSON_GRANTED) {\n" +
-    "        notify(title,options);\n" +
-    "    } else {\n" +
-    "        Notification.requestPermission(function (res) {\n" +
-    "            if (res === PERMISSON_GRANTED) {\n" +
-    "                notify(title,options);\n" +
-    "            }\n" +
-    "        });\n" +
-    "    }\n" +
-    "\n" +
-    "    function notify($title,$options) {\n" +
-    "        var notification = new Notification($title, $options);\n" +
-    "    }\n" +
-    "};</script>"
-
-//设置配置文件
-var setWebConfig = function(webConfig){
-    fs.writeFile('webConfig.json', JSON.stringify(webConfig),  function(err) {
-        if (err) {
-            return console.error(err);
-        }
-    });
-}
-
-//读取配置文件
-var getWebConfig = function(){
-    var data = {}
-    try{
-        data = fs.readFileSync('webConfig.json');
-        data = data.toString()
-        data = JSON.parse(data)
-    }catch{
-        data = {}
-    }
-    return data
-}
 
 //统一根据数据渲染
 var renderListFilter = function(list){
     var arr = []
     var notification = "<script>"
-    var webConfig = getWebConfig()
+    var webConfig = util.getWebConfig()
     list.forEach(function (v, index) {
         var renderPush = function(v){
             var code = v.code ? '('+v.code +')' : ''
@@ -111,11 +72,13 @@ var renderListFilter = function(list){
     var time = (isNumber(data) ? (data || 60) : 60) * 1000
     var reload = '<script>setTimeout(function(){window.location.reload()},'+ time +');</script>'
 
-    setWebConfig(webConfig)
-    var vedio = '<audio id="myAudio" src="/dog.mp3" ></audio>'
+    util.setWebConfig(webConfig)
     var con = '<div>' + arr.join('') + '</div>';
-    var html = arr.length ? (vedio + con + createNotify + notification + reload ) : '<h1 style="text-align: center;">暂无关键字匹配的数据。</h1>';
-    return html
+    var html = arr.length ? (con + notification + reload ) : '<h1 style="text-align: center;">暂无关键字匹配的数据。</h1>';
+    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('#root').append(html)
+    return $.html()
 }
 
 //获取上海的数据
@@ -151,14 +114,14 @@ var getShangHaiHtml = function (callback) {
 
 //获取深圳的数据
 var getShenZhenHtml = function (callback) {
-    var contents = querystring.stringify({//序列化一个对象
+    var params = {
         pageNo: 1,
         pageSize: 10,
         searchTypes: '11,',
         market: '',
         industry: '',
         stockCode: ''
-    });
+    };
     var option = {
         method: 'post',
         host: 'irm.cninfo.com.cn',
@@ -168,36 +131,22 @@ var getShenZhenHtml = function (callback) {
             "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
         },
     };
-    var res = http.request(option,function (res) {
-        let chunks = [],
-            size = 0;
-        res.on('data', function (chunk) {
-            chunks.push(chunk);
-            size += chunk.length;
-        });
-        res.on('end',function(){
-            let data = Buffer.concat(chunks, size);
-            var list = []
-            JSON.parse(data).results.forEach(function (v) {
-                console.log(v.attachedContent)
-                list.push({
-                    title: v.companyShortName,
-                    code: v.stockCode,
-                    text: v.attachedContent,
-                    id: v.esId,
-                    type: 'ShenZhen',
-                    time: v.packageDate,
-                    question: v.mainContent
-                })
+    ajax.request(option, params, function (res) {
+        var list = []
+        JSON.parse(res).results.forEach(function (v) {
+            console.log(v.attachedContent)
+            list.push({
+                title: v.companyShortName,
+                code: v.stockCode,
+                text: v.attachedContent,
+                id: v.esId,
+                type: 'ShenZhen',
+                time: v.packageDate,
+                question: v.mainContent
             })
-            callback(list)
-        });
+        })
+        callback(list)
     })
-    res.on('error', (e) => {
-        console.error(`请求遇到问题: ${e.message}`);
-    });
-    res.write(contents)
-    res.end();
 }
 
 //所有的数据接口
@@ -252,41 +201,31 @@ app.get('/ShenZhen', function (req, res) {
 
 //关键词页面
 app.get('/Setting', function (req, res) {
-    var webConfig = getWebConfig()
-    var postHTML = 
-    '<html><head><meta charset="utf-8"><title>StockMarket实例</title></head>' +
-    '<body>' +
-    '<form method="post" action="/submitSetting">' +
-    '<div style="width: 500px;margin: 20px auto;"><span style="float: left;display: inline-block;width: 100px;text-align: right;">默认非： </span><textarea name="defaultFilter" style="width: 350px;height: 80px;">'+ (webConfig.defaultFilter || "") +'</textarea></div>' +
-    '<div style="width: 500px;margin: 20px auto;"><span style="float: left;display: inline-block;width: 100px;text-align: right;">关键词：</span><textarea name="filter" style="width: 350px;height: 130px;">'+ (webConfig.filter || "") +'</textarea></div>' +
-    '<div style="text-align: center;"><input type="submit" style="width: 100px;height: 30px; "></div>' +
-    '</form>' +
-    '</body></html>';
-    res.send(postHTML);
+    var webConfig = util.getWebConfig()
+    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').append($('#settingKeyForm').html())
+    $('#defaultFilter').html(webConfig.defaultFilter || "")
+    $('#filter').html(webConfig.filter || "")
+    res.send($.html());
 })
 
 //刷新时间页面
 app.get('/SettingTime', function (req, res) {
-    var webConfig = getWebConfig()
-    var postHTML = 
-    '<html><head><meta charset="utf-8"><title>StockMarket实例</title></head>' +
-    '<body>' +
-    '<form method="post" action="/submitSettingTime">' +
-    '刷新时间： <input name="name" value="'+ (webConfig.refreshTime || "") +'">秒</br>'+
-    '<input type="submit" style="width: 100px;height: 30px; margin-top: 10px;">' +
-    '</form>' +
-    '</body></html>';
-    res.send(postHTML);
+    var webConfig = util.getWebConfig()
+    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').append($('#settingTimeForm').html())
+    $('#refreshTime').html( webConfig.refreshTime || "")
+    res.send($.html());
 })
 
 //  主页
 app.get('/', function (req, res) {
-    var html = '<h1 style="text-align: center;"><a target="_blank" href="/all">所有集合</a></h1>'
-    html += '<h1 style="text-align: center;"><a target="_blank" href="/ShangHai">上海</a></h1>'
-    html += '<h1 style="text-align: center;"><a target="_blank" href="/ShenZhen">深圳</a></h1>'
-    html += '<h1 style="text-align: center;"><a target="_blank" href="/Setting">设置过滤文本</a></h1>'
-    html += '<h1 style="text-align: center;"><a target="_blank" href="/SettingTime">设置刷新时间</a></h1>'
-    res.send(html);
+    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').append($('#index').html())
+    res.send($.html());
 })
 
 
@@ -309,10 +248,10 @@ app.post('/submitSetting', function (req, res) {
         // 设置响应头部信息及编码
         res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
         res.write("设置默认非成功：" + body.defaultFilter + "</br>设置关键词成功：" + body.filter);
-        var webConfig = getWebConfig()
+        var webConfig = util.getWebConfig()
         webConfig.filter = body.filter
         webConfig.defaultFilter = body.defaultFilter
-        setWebConfig(webConfig)
+        util.setWebConfig(webConfig)
         res.end();
     });
 })
@@ -329,9 +268,9 @@ app.post('/submitSettingTime', function (req, res) {
         // 设置响应头部信息及编码
         res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
         res.write("设置刷新时间成功:" + body.name + "秒");
-        var webConfig = getWebConfig()
+        var webConfig = util.getWebConfig()
         webConfig.refreshTime = body.name || ''
-        setWebConfig(webConfig)
+        util.setWebConfig(webConfig)
         res.end();
     });
 })

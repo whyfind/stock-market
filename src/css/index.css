@@ -1,0 +1,21 @@
+.submitItem {
+    width: 500px;
+    margin: 20px auto;
+}
+.submitItem  span{
+    float: left;
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.submitItem  textarea{
+    width: 350px;
+    height: 80px;
+}
+.submitBtn{
+    text-align: center;
+}
+.submitBtn input{
+    width: 100px;
+    height: 30px;
+}
