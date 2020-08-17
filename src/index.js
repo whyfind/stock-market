@@ -16,6 +16,7 @@ const { isNumber } = require('util');
 var app = express();
 app.use(express.static(path.join(__dirname, './public')));
 app.use(express.static(path.join(__dirname, './css')));
+app.use(express.static(path.join(__dirname, './js')));
 
 
 //统一根据数据渲染
@@ -145,6 +146,45 @@ var getShenZhenHtml = function (callback) {
     })
 }
 
+
+var startHistory = function(){
+    var content = util.getHistory(path.join(__dirname, './hisroty/content.json'))
+    var save = function(list){
+        var content = util.getHistory(path.join(__dirname, './hisroty/content.json'))
+        var map = JSON.parse(content)
+        list.forEach(function (v) {
+            if(!map[v.id]){
+                map[v.id] = v
+            }
+        })
+        util.setHistory(map)
+
+    }
+     var timer = setInterval( function () {
+         if(content.settingMessage == 'no'){
+             clearInterval(timer)
+             return
+         }
+        getShangHaiHtml(
+            function (list) {
+                save(list)
+            }
+        )
+         getShenZhenHtml(
+             function (list) {
+                 save(list)
+             }
+         )
+    }, 10000)
+
+}
+
+//历史消息
+app.get('/historyInfo', function (req, res) {
+    var html = renderListFilter([])
+    res.send(html);
+})
+
 //所有的数据接口
 app.get('/all', function (req, res) {
     var map = {
@@ -175,6 +215,8 @@ app.get('/all', function (req, res) {
     )
 })
 
+
+
 //上海的数据接口
 app.get('/ShangHai', function (req, res) {
     getShangHaiHtml(
@@ -204,6 +246,18 @@ app.get('/Setting', function (req, res) {
     $('#defaultFilter').html(webConfig.defaultFilter || "")
     $('#filter').html(webConfig.filter || "")
     res.send($.html());
+})
+
+//刷新时间页面
+app.get('/SettingMessage', function (req, res) {
+    var webConfig = util.getWebConfig()
+    webConfig.isSettingMessage = req.query.settingMessage || false
+    util.setWebConfig(webConfig)
+
+    startHistory()
+
+    res.status(200)
+    res.json({success: true})
 })
 
 //刷新时间页面

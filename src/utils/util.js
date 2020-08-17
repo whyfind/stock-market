@@ -37,8 +37,30 @@ const getTemplate = (path) =>{
     return data
 }
 
+//读取模板
+const getHistory = (path) =>{
+    var data = '{}'
+    try{
+        data = fs.readFileSync(path);
+        data = data.toString()
+    }catch(e){
+        data = '{}'
+        console.log(e.message)
+    }
+    return data
+}
+//设置配置文件
+const setHistory = (webConfig) => {
+    fs.writeFile(path.join(__dirname, '../history/content.json'), JSON.stringify(webConfig),  function(err) {
+        if (err) {
+            return console.error(err);
+        }
+    });
+}
 module.exports = {
     getWebConfig: getWebConfig,
     setWebConfig: setWebConfig,
     getTemplate: getTemplate,
+    getHistory: getHistory,
+    setHistory: setHistory,
 }

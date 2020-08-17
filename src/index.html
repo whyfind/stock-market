@@ -23,20 +23,38 @@
     <audio id="myAudio" src="/dog.mp3" ></audio>
 </body>
 
+<script type="application/javascript" src="./watermark.js"></script>
+<script type="application/javascript" src="./ajax.js"></script>
 
 <script type="text/html" id="index">
-    <div>
-        <h1 style="text-align: center;"><a target="_blank" href="/all">所有集合</a></h1>
-        <h1 style="text-align: center;"><a target="_blank" href="/ShangHai">上海</a></h1>
-        <h1 style="text-align: center;"><a target="_blank" href="/ShenZhen">深圳</a></h1>
-        <h1 style="text-align: center;"><a target="_blank" href="/Setting">设置过滤文本</a></h1>
-        <h1 style="text-align: center;"><a target="_blank" href="/SettingTime">设置刷新时间</a></h1>
+    <div style="text-align: center;">
+        <h2><a target="_blank" href="/all">所有集合</a></h2>
+        <h2><a target="_blank" href="/historyInfo">历史消息</a></h2>
+        <h2><a target="_blank" href="/ShangHai">上海</a></h2>
+        <h2><a target="_blank" href="/ShenZhen">深圳</a></h2>
+        <h2><a target="_blank" href="/Setting">设置过滤文本</a></h2>
+        <h2><a target="_blank" href="/SettingTime">设置刷新时间</a></h2>
+        <h2><a target="_blank" onclick="settingMessage('yes')">开启消息存储</a></h2>
+        <h2><a target="_blank" onclick="settingMessage('no')">关闭消息存储</a></h2>
     </div>
 </script>
 
+<script type="application/javascript">
+    function settingMessage(isSetting) {
+        window.Http.get({
+            url: '/settingMessage',
+            data:{settingMessage: isSetting},
+            success: function (res) {
+                console.log(res)
+            }
+        })
+    }
+</script>
+
+
 <script type="text/html" id="listTemplate">
     {{#if list}}
-        <div>
+        <div class="show-list">
             {{#each list}}
             <div style="border-bottom: 1px dashed #999;">
                 <h1>{{index}}、{{title}}{{code}}</h1>
