@@ -56,6 +56,13 @@ var listFilter = function (list) {
     return arr
 }
 
+var clearHistoryMessage = require('./router/history')
+var settingKey = require('./router/settingKey')
+var settingTime = require('./router/settingTime')
+app.use('/',clearHistoryMessage)
+app.use('/',settingKey)
+app.use('/',settingTime)
+
 //统一根据数据渲染
 var renderList = function(list, isCache){
     var arr = listFilter(list)
@@ -72,7 +79,7 @@ var renderList = function(list, isCache){
     notification += "</script>"
 
     var data = webConfig.refreshTime
-    var time = (isNumber(data) ? (data || 60) : 60) * 1000
+    var time = (isNaN(Number(data)) ? 60: data) * 1000
     var reload = '<script>setTimeout(function(){window.location.reload()},'+ time +');</script>'
 
     util.setWebConfig(webConfig)
@@ -193,7 +200,7 @@ var startHistory = function(){
                  save()
              }
          )
-    }, 10000)
+    }, 20000)
 }
 
 //历史消息
@@ -206,6 +213,7 @@ app.get('/historyInfo', function (req, res) {
     var html = renderList(arr, true)
     res.send(html);
 })
+
 
 //所有的数据接口
 app.get('/all', function (req, res) {
@@ -238,7 +246,6 @@ app.get('/all', function (req, res) {
 })
 
 
-
 //上海的数据接口
 app.get('/ShangHai', function (req, res) {
     getShangHaiHtml(
@@ -259,17 +266,6 @@ app.get('/ShenZhen', function (req, res) {
     )
 })
 
-//关键词页面
-app.get('/Setting', function (req, res) {
-    var webConfig = util.getWebConfig()
-    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
-    let $ = cheerio.load(template, { decodeEntities: false });
-    $('body').append($('#settingKeyForm').html())
-    $('#defaultFilter').html(webConfig.defaultFilter || "")
-    $('#filter').html(webConfig.filter || "")
-    res.send($.html());
-})
-
 //刷新时间页面
 app.get('/SettingMessage', function (req, res) {
     var webConfig = util.getWebConfig()
@@ -288,20 +284,13 @@ app.get('/SettingMessage', function (req, res) {
     res.json({success: true})
 })
 
-//刷新时间页面
-app.get('/SettingTime', function (req, res) {
-    var webConfig = util.getWebConfig()
-    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
-    let $ = cheerio.load(template, { decodeEntities: false });
-    $('body').append($('#settingTimeForm').html())
-    $('#refreshTime').html( webConfig.refreshTime || "")
-    res.send($.html());
-})
+
 
 //  主页
 app.get('/', function (req, res) {
     var template = util.getTemplate(path.resolve(__dirname, './index.html'))
     let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').attr('id','index-container')
     $('body').append($('#index').html())
     res.send($.html());
 })

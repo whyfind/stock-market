@@ -1,3 +1,6 @@
+#index-container{
+    background: linear-gradient(to bottom, #f8f8f8 0%,#f6f4f4 100%);
+}
 .submitItem {
     width: 500px;
     margin: 20px auto;
@@ -23,4 +26,33 @@
 .show-list{
     max-width: 1000px;
     margin: 0 auto;
+}
+.entry-list{
+    text-align: center;
+    width: 400px;
+    margin: 0px auto;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+.entry-list h2{
+    width: 40%;
+    float: left;
+    padding: 0;
+    margin: 20px 30px 20px 0;
+    height: 80px;
+    line-height: 80px;
+    font-size: 18px;
+    border: 1px solid #3e84e9;
+    box-sizing: border-box;
+    background: #3e84e9;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: 500;
+}
+.entry-list h2 a{
+    text-decoration: none;
+    color: #fff;
 }

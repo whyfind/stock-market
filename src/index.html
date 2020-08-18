@@ -27,15 +27,15 @@
 <script type="application/javascript" src="./ajax.js"></script>
 
 <script type="text/html" id="index">
-    <div style="text-align: center;">
+    <div class="entry-list">
         <h2><a target="_blank" href="/all">所有集合</a></h2>
         <h2><a target="_blank" href="/historyInfo">历史消息</a></h2>
         <h2><a target="_blank" href="/ShangHai">上海</a></h2>
         <h2><a target="_blank" href="/ShenZhen">深圳</a></h2>
         <h2><a target="_blank" href="/Setting">设置过滤文本</a></h2>
         <h2><a target="_blank" href="/SettingTime">设置刷新时间</a></h2>
-        <h2><a target="_blank" id="yes" onclick="settingMessage('yes')">开启消息存储</a></h2>
-        <h2><a target="_blank" id="no" style="display: none" onclick="settingMessage('no')">关闭消息存储</a></h2>
+        <h2><a target="_blank" id="yes" onclick="settingMessage('yes')">开启挂机</a><a target="_blank" id="no" style="display: none" onclick="settingMessage('no')">关闭挂机</a></h2>
+        <h2><a target="_blank" onclick="clearHistoryMessage()">清除历史消息</a></h2>
     </div>
 </script>
 
@@ -53,6 +53,14 @@
                     document.getElementById('yes').style.display = 'block'
                     document.getElementById('no').style.display = 'none'
                 }
+            }
+        })
+    }
+    function clearHistoryMessage() {
+        window.Http.get({
+            url: '/clearHistoryMessage',
+            success: function (res) {
+
             }
         })
     }
