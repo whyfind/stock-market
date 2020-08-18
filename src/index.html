@@ -34,8 +34,8 @@
         <h2><a target="_blank" href="/ShenZhen">深圳</a></h2>
         <h2><a target="_blank" href="/Setting">设置过滤文本</a></h2>
         <h2><a target="_blank" href="/SettingTime">设置刷新时间</a></h2>
-        <h2><a target="_blank" onclick="settingMessage('yes')">开启消息存储</a></h2>
-        <h2><a target="_blank" onclick="settingMessage('no')">关闭消息存储</a></h2>
+        <h2><a target="_blank" id="yes" onclick="settingMessage('yes')">开启消息存储</a></h2>
+        <h2><a target="_blank" id="no" style="display: none" onclick="settingMessage('no')">关闭消息存储</a></h2>
     </div>
 </script>
 
@@ -46,6 +46,13 @@
             data:{settingMessage: isSetting},
             success: function (res) {
                 console.log(res)
+                if(isSetting == 'yes'){
+                    document.getElementById('yes').style.display = 'none'
+                    document.getElementById('no').style.display = 'block'
+                }else{
+                    document.getElementById('yes').style.display = 'block'
+                    document.getElementById('no').style.display = 'none'
+                }
             }
         })
     }

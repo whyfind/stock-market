@@ -62,4 +62,4 @@
         window.__canvasWM = __canvasWM;
     }
 })();    // 调用
-__canvasWM({content: '峰峰'});
+__canvasWM({content: '青'});

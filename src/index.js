@@ -2,9 +2,7 @@ console.log('你好！欢迎使用废废的小工具~');
 const https = require('https');
 const http = require('http');
 const cheerio = require('cheerio');
-const request = require('request');
 var querystring = require('querystring');
-var fs = require("fs")
 
 var util = require('./utils/util');
 var ajax = require('./utils/http');
@@ -18,32 +16,25 @@ app.use(express.static(path.join(__dirname, './public')));
 app.use(express.static(path.join(__dirname, './css')));
 app.use(express.static(path.join(__dirname, './js')));
 
+var timer = null
 
-//统一根据数据渲染
-var renderListFilter = function(list){
+var listFilter = function (list) {
     var arr = []
-    var notification = "<script>"
     var webConfig = util.getWebConfig()
+
     list.forEach(function (v, index) {
         v.code =  v.code ? '('+v.code +')' : ''
         v.index = index + 1
         v.question = v.question || ''
         v.text = v.text || ''
 
-        var notify = function(v){
-            webConfig[v.type] = webConfig[v.type] || []
-            webConfig[v.type].push(v.id)
-            notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);" +
-        'var myVideo=document.getElementById("myAudio");myVideo.addEventListener("canplay",function(){myVideo.play();});'
-        }
-
         //如果没有设置过滤关键词
         if(!webConfig.filter){
             arr.push(v)
         }else{
-           var filter = webConfig.filter.split(" ")
-           var defaultFilter = webConfig.defaultFilter.split(" ")
-           filter.forEach(function(item){
+            var filter = webConfig.filter.split(" ")
+            var defaultFilter = webConfig.defaultFilter.split(" ")
+            filter.forEach(function(item){
                 var flag = false
                 defaultFilter.forEach(function(noItem){
                     if(v.text.indexOf(noItem) >= 0){
@@ -51,15 +42,31 @@ var renderListFilter = function(list){
                     }
                 })
 
-               //问题当中有关键词
-                if(v.question.indexOf(item) >= 0 || v.text.indexOf(item) >= 0){
+                //问题当中有关键词 并且 回答中不包含
+                if((v.question.indexOf(item) >= 0 || v.text.indexOf(item) >= 0) && !flag){
                     arr.push(v)
-                    //(没有历史记录 或者 没有历史通知) 并且 回答中不包含
-                    if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0) && !flag){
-                        notify(v)
+                    //(没有历史记录 或者 没有历史通知)
+                    if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0)){
+                        v.isNotify = true
                     }
                 }
-           })
+            })
+        }
+    })
+    return arr
+}
+
+//统一根据数据渲染
+var renderList = function(list, isCache){
+    var arr = listFilter(list)
+    var notification = "<script>"
+    var webConfig = util.getWebConfig()
+    arr.forEach(function (v, index) {
+        if(v.isNotify && !isCache){
+            webConfig[v.type] = webConfig[v.type] || []
+            webConfig[v.type].push(v.id)
+            notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);" +
+        'var myVideo=document.getElementById("myAudio");myVideo.addEventListener("canplay",function(){myVideo.play();});'
         }
     })
     notification += "</script>"
@@ -131,7 +138,6 @@ var getShenZhenHtml = function (callback) {
     ajax.request(option, params, function (res) {
         var list = []
         JSON.parse(res).results.forEach(function (v) {
-            console.log(v.attachedContent)
             list.push({
                 title: v.companyShortName,
                 code: v.stockCode,
@@ -148,40 +154,56 @@ var getShenZhenHtml = function (callback) {
 
 
 var startHistory = function(){
-    var content = util.getHistory(path.join(__dirname, './hisroty/content.json'))
-    var save = function(list){
-        var content = util.getHistory(path.join(__dirname, './hisroty/content.json'))
-        var map = JSON.parse(content)
-        list.forEach(function (v) {
-            if(!map[v.id]){
-                map[v.id] = v
-            }
-        })
-        util.setHistory(map)
-
+    var webConfig = util.getWebConfig()
+    var map = {
+        shanghai: false,
+        shanghList: [],
+        shenzhen: false,
+        shenzhenList: [],
     }
-     var timer = setInterval( function () {
-         if(content.settingMessage == 'no'){
+    var save = function(){
+        if(map.shenzhen && map.shanghai){
+            var list = listFilter(map.shenzhenList.concat(map.shanghList))
+            var mapList = util.getHistory()
+            list.forEach(function (v) {
+                if(!mapList[v.id]){
+                    mapList[v.id] = v
+                }
+            })
+            util.setHistory(mapList)
+        }
+    }
+     timer = setInterval( function () {
+         if(webConfig.settingMessage == 'no'){
              clearInterval(timer)
              return
          }
+         console.log('发出请求，运行一次~')
         getShangHaiHtml(
             function (list) {
-                save(list)
+                map.shanghai = true
+                map.shanghList = list
+                save()
             }
         )
          getShenZhenHtml(
              function (list) {
-                 save(list)
+                 map.shenzhen = true
+                 map.shenzhenList = list
+                 save()
              }
          )
     }, 10000)
-
 }
 
 //历史消息
 app.get('/historyInfo', function (req, res) {
-    var html = renderListFilter([])
+    var history = util.getHistory()
+    var arr = []
+    Object.keys(history).forEach(function (v) {
+        arr.push(history[v])
+    })
+    var html = renderList(arr, true)
     res.send(html);
 })
 
@@ -195,7 +217,7 @@ app.get('/all', function (req, res) {
     }
     var all = function() {
         if(map.shenzhen && map.shanghai){
-            var html = renderListFilter(map.shenzhenList.concat(map.shanghList))
+            var html = renderList(map.shenzhenList.concat(map.shanghList))
             res.send(html);
         }
     }
@@ -221,7 +243,7 @@ app.get('/all', function (req, res) {
 app.get('/ShangHai', function (req, res) {
     getShangHaiHtml(
         function (list) {
-            var html = renderListFilter(list)
+            var html = renderList(list)
             res.send(html);
         }
     )
@@ -231,7 +253,7 @@ app.get('/ShangHai', function (req, res) {
 app.get('/ShenZhen', function (req, res) {
     getShenZhenHtml(
         function (list) {
-            var html = renderListFilter(list)
+            var html = renderList(list)
             res.send(html);
         }
     )
@@ -254,7 +276,13 @@ app.get('/SettingMessage', function (req, res) {
     webConfig.isSettingMessage = req.query.settingMessage || false
     util.setWebConfig(webConfig)
 
-    startHistory()
+    if(req.query.settingMessage == 'yes'){
+        console.log('开始信息存储功能~')
+        startHistory()
+    }else{
+        console.log('关闭信息存储功能~')
+        clearInterval(timer)
+    }
 
     res.status(200)
     res.json({success: true})

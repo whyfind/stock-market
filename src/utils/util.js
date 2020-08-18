@@ -38,13 +38,14 @@ const getTemplate = (path) =>{
 }
 
 //读取模板
-const getHistory = (path) =>{
-    var data = '{}'
+const getHistory = () =>{
+    var data = {}
     try{
-        data = fs.readFileSync(path);
+        data = fs.readFileSync(path.join(__dirname, '../history/content.json'));
         data = data.toString()
+        data = JSON.parse(data)
     }catch(e){
-        data = '{}'
+        data = {}
         console.log(e.message)
     }
     return data
