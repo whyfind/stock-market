@@ -68,22 +68,26 @@ var renderList = function(list, isCache){
     var arr = listFilter(list)
     var notification = "<script>"
     var webConfig = util.getWebConfig()
-    arr.forEach(function (v, index) {
-        if(v.isNotify && !isCache){
-            webConfig[v.type] = webConfig[v.type] || []
-            webConfig[v.type].push(v.id)
-            notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);" +
-        'var myVideo=document.getElementById("myAudio");myVideo.addEventListener("canplay",function(){myVideo.play();});'
-        }
-    })
-    notification += "</script>"
+    var html = ''
+    //如果不是渲染历史 则不需刷新
+    if(!isCache){
+        arr.forEach(function (v, index) {
+            if(v.isNotify){
+                webConfig[v.type] = webConfig[v.type] || []
+                webConfig[v.type].push(v.id)
+                notification += "setTimeout(function(){createNotify('"+ v.title +"',{body:'有需要您关注的信息'})}, 0);" +
+                    'var myVideo=document.getElementById("myAudio");myVideo.addEventListener("canplay",function(){myVideo.play();});'
+            }
+        })
+        notification += "</script>"
 
-    var data = webConfig.refreshTime
-    var time = (isNaN(Number(data)) ? 60: data) * 1000
-    var reload = '<script>setTimeout(function(){window.location.reload()},'+ time +');</script>'
+        var data = webConfig.refreshTime
+        var time = (isNaN(Number(data)) ? 60: data) * 1000
+        var reload = '<script>setTimeout(function(){window.location.reload()},'+ time +');</script>'
+        util.setWebConfig(webConfig)
+        html = notification + reload;
+    }
 
-    util.setWebConfig(webConfig)
-    var html = notification + reload;
     var template = util.getTemplate(path.resolve(__dirname, './index.html'))
     let $ = cheerio.load(template, { decodeEntities: false });
     var con = handlebars.compile($("#listTemplate").html())({list: arr});
