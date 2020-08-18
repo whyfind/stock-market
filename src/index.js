@@ -1,6 +1,5 @@
 console.log('你好！欢迎使用废废的小工具~');
 const https = require('https');
-const http = require('http');
 const cheerio = require('cheerio');
 var querystring = require('querystring');
 
@@ -10,7 +9,6 @@ var path = require("path")
 var handlebars = require("handlebars")
 
 var express = require('express');
-const { isNumber } = require('util');
 var app = express();
 app.use(express.static(path.join(__dirname, './public')));
 app.use(express.static(path.join(__dirname, './css')));

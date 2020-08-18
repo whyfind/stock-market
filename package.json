@@ -34,7 +34,6 @@
     "handlebars": "^4.7.6",
     "https": "^1.0.0",
     "pkg": "^4.4.9",
-    "querystring": "^0.2.0",
-    "request": "^2.88.2"
+    "querystring": "^0.2.0"
   }
 }
