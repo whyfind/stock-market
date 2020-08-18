@@ -1,0 +1,124 @@
+<html>
+<head>
+    <!--UTF-8-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!--兼容IE-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!--SEO优化-->
+    <meta keywords="Saas平台" />
+    <meta description="Saas平台." />
+    <meta author="找找找" />
+    <link rel="icon" href="./logo.png" type="image/x-icon">
+    <!--添加对手机设备的支持-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Win</title>
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+</head>
+<body>
+    
+    <script type="text/javascript">
+        Notification.requestPermission(res =>{ console.log(res); });
+        function createNotify(title,options) {
+            var PERMISSON_GRANTED = 'granted';
+            var PERMISSON_DENIED = 'denied';
+            var PERMISSON_DEFAULT = 'default';
+            if (Notification.permission === PERMISSON_GRANTED) {
+                notify(title,options);
+            } else {
+                Notification.requestPermission(function (res) {
+                    if (res === PERMISSON_GRANTED) {
+                        notify(title,options);
+                    }
+                });
+            }
+            function notify($title,$options) {
+                var notification = new Notification($title, $options);
+            }
+        };
+        // setTimeout(function(){window.location.reload()},window.refreshTime);
+    </script>
+    <audio id="myAudio" src="/dog.mp3" ></audio>
+    <div id="root">
+
+    </div>
+</body>
+
+<script type="application/javascript" src="./watermark.js"></script>
+<script type="application/javascript" src="./ajax.js"></script>
+
+<script type="text/html" id="index">
+    <div class="entry-list">
+        <h2><a target="_blank" href="/all">所有集合</a></h2>
+        <h2><a target="_blank" href="/historyInfo">历史消息</a></h2>
+        <h2><a target="_blank" href="/ShangHai">上海</a></h2>
+        <h2><a target="_blank" href="/ShenZhen">深圳</a></h2>
+        <h2><a target="_blank" href="/Setting">设置过滤文本</a></h2>
+        <h2><a target="_blank" href="/SettingTime">设置刷新时间</a></h2>
+        <h2><a target="_blank" id="yes" onclick="settingMessage('yes')">开启挂机</a><a target="_blank" id="no" style="display: none" onclick="settingMessage('no')">关闭挂机</a></h2>
+        <h2><a target="_blank" onclick="clearHistoryMessage()">清除历史消息</a></h2>
+    </div>
+</script>
+
+<script type="application/javascript">
+    function settingMessage(isSetting) {
+        window.Http.get({
+            url: '/settingMessage',
+            data:{settingMessage: isSetting},
+            success: function (res) {
+                console.log(res)
+                if(isSetting == 'yes'){
+                    document.getElementById('yes').style.display = 'none'
+                    document.getElementById('no').style.display = 'block'
+                }else{
+                    document.getElementById('yes').style.display = 'block'
+                    document.getElementById('no').style.display = 'none'
+                }
+            }
+        })
+    }
+    function clearHistoryMessage() {
+        window.Http.get({
+            url: '/clearHistoryMessage',
+            success: function (res) {
+
+            }
+        })
+    }
+</script>
+
+
+<script type="text/html" id="listTemplate">
+    {{#if list}}
+        <div class="show-list">
+            {{#each list}}
+            <div style="border-bottom: 1px dashed #999;">
+                <h1>{{index}}、{{title}}{{code}}</h1>
+                <p><h2 style="float:left;margin:0;">问：</h2><p style="line-height: 35px;font-size: 18px;">{{question}}</p></p>
+                <p><h2 style="float:left;margin:0;">答：</h2><p style="line-height: 35px;font-size: 18px;">{{text}}</p></p>
+                <p style="color: #1818fd;">{{time}}</p>
+            </div>
+            {{/each}}
+        </div>
+    {{else}}
+        <h1 style="text-align: center;">{{#if isCache}}暂无存储的数据。{{else}}暂无关键字匹配的数据。{{/if}}</h1>
+    {{/if}}
+</script>
+
+<script type="text/html" id="settingKeyForm">
+    <form method="post" action="/submitSetting">
+        <div class="submitItem"><span>默认非： </span><textarea name="defaultFilter" id="defaultFilter"></textarea></div>
+        <div class="submitItem"><span>关键词：</span><textarea name="filter" id="filter" style="height: 130px;"></textarea></div>
+        <div class="submitBtn"><input type="submit"></div>
+    </form>'
+</script>
+
+<script type="text/html" id="settingTimeForm">
+    <form method="post" action="/submitSettingTime">
+        <div class="submitItem"><span>刷新时间： </span><input name="name" id="refreshTime"/>秒</div>
+        <div class="submitBtn"><input type="submit"></div>
+    </form>
+</script>
+
+</html>

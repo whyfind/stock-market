@@ -3,6 +3,9 @@
   "name": "HelloWorld",
   "nodejs": true,
   "single-instance": true,
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
   "window": {
     "title": "HelloWorld",
     "width": 800,
@@ -28,9 +31,9 @@
   "devDependencies": {
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
+    "handlebars": "^4.7.6",
     "https": "^1.0.0",
     "pkg": "^4.4.9",
-    "querystring": "^0.2.0",
-    "request": "^2.88.2"
+    "querystring": "^0.2.0"
   }
 }
