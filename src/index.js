@@ -15,7 +15,9 @@ var keySetting = require('./router/settingKey')(app) //关键词设置
 var timeSetting = require('./router/settingTime')(app) //时间设置
 var hoop = require('./router/hoop')(app) //外挂
 
-
+var config = util.getWebConfig()
+config.isSettingMessage = 'no'
+util.setWebConfig(config)
 
 
 //  主页
