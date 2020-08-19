@@ -8,8 +8,7 @@ var querystring = require('querystring');
 module.exports=function(app){
     app.get('/SettingTime', function (req, res) {
         var webConfig = util.getWebConfig()
-        var template = util.getTemplate(path.resolve(__dirname, '../index.html'))
-        let $ = cheerio.load(template, { decodeEntities: false });
+        let $ = util.getIndexPage()
         $('body').append($('#settingTimeForm').html())
         $('#refreshTime').val( webConfig.refreshTime || "")
         res.send($.html());

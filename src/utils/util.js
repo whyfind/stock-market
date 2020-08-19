@@ -1,5 +1,6 @@
 var fs = require("fs")
 var path = require("path")
+var cheerio = require("cheerio")
 
 function getDayOfWeek(dayValue){
     var day = new Date(Date.parse(dayValue.replace(/-/g, '/'))); //将日期值格式化
@@ -100,6 +101,33 @@ const clearMemoryItem = (fileName) => {
     }
 }
 
+var pageInit = function(){
+    var config = getWebConfig()
+    var script = '<script type="application/javascript">'
+    script += 'window.watermark="' + config.watermark + '";'
+    script += 'window.refreshTime="' + config.refreshTime + '";'
+    script += '</script>'
+    return script
+}
+
+var getIndexPage = function(){
+    var template = getTemplate(path.resolve(__dirname, '../index.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').attr('id','index-container')
+    var script = pageInit()
+    $('body').prepend(script)
+    return $
+}
+
+var getCachePage = function(){
+    var template = getTemplate(path.resolve(__dirname, '../cache.html'))
+    let $ = cheerio.load(template, { decodeEntities: false });
+    $('body').attr('id','index-container')
+    var script = pageInit()
+    $('body').prepend(script)
+    return $
+}
+
 module.exports = {
     getWebConfig: getWebConfig,
     setWebConfig: setWebConfig,
@@ -110,4 +138,6 @@ module.exports = {
     clearMemoryItem: clearMemoryItem,
     getDayOfWeek: getDayOfWeek,
     formatDate: formatDate,
+    getIndexPage: getIndexPage,
+    getCachePage: getCachePage,
 }

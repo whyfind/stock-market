@@ -37,8 +37,7 @@ module.exports = function (app) {
                 type: req.query.type
             }
 
-            var template = util.getTemplate(path.resolve(__dirname, '../cache.html'))
-            let $ = cheerio.load(template, { decodeEntities: false });
+            let $ = util.getCachePage();
             var con = handlebars.compile($("#listTemplate").html())(map);
 
             $('body').attr('id','index-container')

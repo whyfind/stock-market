@@ -62,4 +62,4 @@
         window.__canvasWM = __canvasWM;
     }
 })();    // 调用
-__canvasWM({content: '青'});
+__canvasWM({content: window.watermark || '青'});

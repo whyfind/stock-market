@@ -15,11 +15,12 @@ var keySetting = require('./router/settingKey')(app) //关键词设置
 var timeSetting = require('./router/settingTime')(app) //时间设置
 var hoop = require('./router/hoop')(app) //外挂
 
+
+
+
 //  主页
 app.get('/', function (req, res) {
-    var template = util.getTemplate(path.resolve(__dirname, './index.html'))
-    let $ = cheerio.load(template, { decodeEntities: false });
-    $('body').attr('id','index-container')
+    var $ = util.getIndexPage()
     $('body').append($('#index').html())
     res.send($.html());
 })
