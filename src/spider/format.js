@@ -8,7 +8,7 @@ var renderKey = function (content, key) {
     return content.replace(reg, '<span style="color: red;font-weight: bold;">'+ key + '</span>')
 }
 
-var listFilter = function (list) {
+var listFilter = function (list,isCache) {
     var arr = []
     var webConfig = util.getWebConfig()
 
@@ -36,11 +36,15 @@ var listFilter = function (list) {
                 if((v.question.indexOf(key) >= 0 || v.text.indexOf(key) >= 0) && !flag){
                     v.question = renderKey(v.question, key)
                     v.text = renderKey(v.text, key)
-                    //(没有历史记录 或者 没有历史通知)
-                    if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0)){
-                        v.isNotify = true
+                    if(!isCache){
+                        //(没有历史记录 或者 没有历史通知)
+                        if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0)){
+                            v.isNotify = true
+                        }
+                        arr.push(v)
+                    }else{
+                        arr.push(v)
                     }
-                    arr.push(v)
                 }
             })
         }
@@ -55,7 +59,7 @@ var renderList = function(list, isCache, title){
     var webConfig = util.getWebConfig()
     var html = ''
     if(!isCache){
-        arr = listFilter(list)
+        arr = listFilter(list,isCache)
         //如果不是渲染历史 则不需刷新
         arr.forEach(function (v, index) {
             if(v.isNotify){
