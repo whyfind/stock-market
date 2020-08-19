@@ -1,0 +1,70 @@
+<html>
+<head>
+    <!--UTF-8-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!--兼容IE-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!--SEO优化-->
+    <meta keywords="Saas平台" />
+    <meta description="Saas平台." />
+    <meta author="找找找" />
+    <link rel="icon" href="./logo.png" type="image/x-icon">
+    <!--添加对手机设备的支持-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Win</title>
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+</head>
+<body>
+    <h2>存储消息</h2><a target="_blank" onclick="settingMessage()">清除历史消息</a>
+    <div id="root">
+
+
+    </div>
+</body>
+
+<script type="application/javascript" src="./watermark.js"></script>
+<script type="application/javascript" src="./ajax.js"></script>
+
+
+
+<script type="application/javascript">
+    function settingMessage(isSetting) {
+        window.Http.get({
+            url: '/settingMessage',
+            data:{settingMessage: isSetting},
+            success: function (res) {
+                console.log(res)
+                if(isSetting == 'yes'){
+                    document.getElementById('yes').style.display = 'none'
+                    document.getElementById('no').style.display = 'block'
+                }else{
+                    document.getElementById('yes').style.display = 'block'
+                    document.getElementById('no').style.display = 'none'
+                }
+            }
+        })
+    }
+</script>
+
+
+<script type="text/html" id="listTemplate">
+    {{#if list}}
+    <div class="show-list">
+        {{#each list}}
+        <div style="border-bottom: 1px dashed #999;">
+            <h1>{{index}}、{{title}}{{code}}</h1>
+            <p><h2 style="float:left;margin:0;">问：</h2><p style="line-height: 35px;font-size: 18px;">{{question}}</p></p>
+            <p><h2 style="float:left;margin:0;">答：</h2><p style="line-height: 35px;font-size: 18px;">{{text}}</p></p>
+            <p style="color: #1818fd;">{{time}}</p>
+        </div>
+        {{/each}}
+    </div>
+    {{else}}
+    <h1 style="text-align: center;">暂无存储的数据。</h1>
+    {{/if}}
+</script>
+
+
+</html>
