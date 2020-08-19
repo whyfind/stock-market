@@ -3,6 +3,11 @@ var util = require('../utils/util');
 var path = require("path")
 var handlebars = require("handlebars")
 
+var renderKey = function (content, key) {
+    var reg = new RegExp(key, 'g');//g就是代表全部bai
+    return content.replace(reg, '<span style="color: red;font-weight: bold;">'+ key + '</span>')
+}
+
 var listFilter = function (list) {
     var arr = []
     var webConfig = util.getWebConfig()
@@ -19,7 +24,7 @@ var listFilter = function (list) {
         }else{
             var filter = webConfig.filter.split(" ")
             var defaultFilter = webConfig.defaultFilter.split(" ")
-            filter.forEach(function(item){
+            filter.forEach(function(key){
                 var flag = false
                 defaultFilter.forEach(function(noItem){
                     if(v.text.indexOf(noItem) >= 0){
@@ -28,12 +33,14 @@ var listFilter = function (list) {
                 })
 
                 //问题当中有关键词 并且 回答中不包含
-                if((v.question.indexOf(item) >= 0 || v.text.indexOf(item) >= 0) && !flag){
-                    arr.push(v)
+                if((v.question.indexOf(key) >= 0 || v.text.indexOf(key) >= 0) && !flag){
+                    v.question = renderKey(v.question, key)
+                    v.text = renderKey(v.text, key)
                     //(没有历史记录 或者 没有历史通知)
                     if((!webConfig[v.type] || webConfig[v.type].indexOf(v.id) < 0)){
                         v.isNotify = true
                     }
+                    arr.push(v)
                 }
             })
         }
@@ -43,12 +50,13 @@ var listFilter = function (list) {
 
 //统一根据数据渲染
 var renderList = function(list, isCache){
-    var arr = listFilter(list)
+    var arr = list
     var notification = "<script>"
     var webConfig = util.getWebConfig()
     var html = ''
-    //如果不是渲染历史 则不需刷新
     if(!isCache){
+        arr = listFilter(list)
+        //如果不是渲染历史 则不需刷新
         arr.forEach(function (v, index) {
             if(v.isNotify){
                 webConfig[v.type] = webConfig[v.type] || []

@@ -7,7 +7,7 @@ var spiderFormat = require('../spider/format')
 module.exports = function (app) {
 
     var timer = null
-    var startHistory = function(){
+    var startMemory = function(){
         var webConfig = util.getWebConfig()
         var map = {
             shanghai: false,
@@ -18,21 +18,32 @@ module.exports = function (app) {
         var save = function(){
             if(map.shenzhen && map.shanghai){
                 var list = spiderFormat.listFilter(map.shenzhenList.concat(map.shanghList))
-                var fileName = util.formatDate(new Date()) + '.txt'
-                var mapList = util.getHistory(fileName)
+                if(list.length == 0){
+                    return
+                }
+                //一直开启备份信息
+                var fileName = '../recover/' + util.formatDate(new Date()) + '.txt'
+                var mapList = util.getMemory(fileName)
                 list.forEach(function (v) {
                     if(!mapList[v.id]){
                         mapList[v.id] = v
                     }
                 })
-                util.setHistory(mapList, fileName)
+                util.setMemory(mapList, fileName)
+                //开启存储信息
+                if(webConfig.isSettingMessage == 'yes'){
+                    var fileName = '../history/' + util.formatDate(new Date()) + '.txt'
+                    var mapList = util.getMemory(fileName)
+                    list.forEach(function (v) {
+                        if(!mapList[v.id]){
+                            mapList[v.id] = v
+                        }
+                    })
+                    util.setMemory(mapList, fileName)
+                }
             }
         }
         timer = setInterval( function () {
-            if(webConfig.settingMessage == 'no'){
-                clearInterval(timer)
-                return
-            }
             console.log('发出请求，运行一次~')
             spiderHttp.getShangHaiHtml(
                 function (list) {
@@ -50,7 +61,8 @@ module.exports = function (app) {
             )
         }, 20000)
     }
-
+    console.log('开始信息备份~')
+    startMemory()
     //刷新时间页面
     app.get('/SettingMessage', function (req, res) {
         var webConfig = util.getWebConfig()
@@ -59,12 +71,9 @@ module.exports = function (app) {
 
         if(req.query.settingMessage == 'yes'){
             console.log('开始信息存储功能~')
-            startHistory()
         }else{
             console.log('关闭信息存储功能~')
-            clearInterval(timer)
         }
-
         res.status(200)
         res.json({success: true})
     })

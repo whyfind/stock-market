@@ -25,42 +25,49 @@
 <script type="application/javascript" src="./ajax.js"></script>
 
 <script type="application/javascript">
-    function settingMessage(isSetting) {
+    function clearHistoryMessage() {
+        var data = {
+            type: document.getElementById('type').value
+        }
         window.Http.get({
-            url: '/settingMessage',
-            data:{settingMessage: isSetting},
+            url: '/clearCache',
+            data: data,
             success: function (res) {
-                console.log(res)
-                if(isSetting == 'yes'){
-                    document.getElementById('yes').style.display = 'none'
-                    document.getElementById('no').style.display = 'block'
-                }else{
-                    document.getElementById('yes').style.display = 'block'
-                    document.getElementById('no').style.display = 'none'
-                }
+                window.location.reload()
             }
         })
     }
-    function deleteFile() {
-        
+    function deleteFile(e) {
+        var data = {
+            type: document.getElementById('type').value,
+            date: e.target.id
+        }
+        window.Http.get({
+            url: '/clearCacheItem',
+            data: data,
+            success: function (res) {
+                window.location.reload()
+            }
+        })
     }
 </script>
 
 
 <script type="text/html" id="listTemplate">
     <div>
-        <h2 class="info-title">存储消息列表<a target="_blank" onclick="settingMessage()">清除所有</a></h2>
+        <input id="type" value="{{type}}" type="hidden">
+        <h2 class="info-title">{{title}}<a target="_blank" onclick="clearHistoryMessage()">清除所有</a></h2>
         {{#if list}}
             <div class="info-list">
                 {{#each list}}
                 <div class="info-item">
-                    <a class="link" href="/getCache?date={{fileName}}" target="_blank">{{fileName}}  {{weekDay}}</a>
-                    <a class="delete" onclick="deleteFile">删除</a>
+                    <a class="link" href="/getCacheItem?date={{fileName}}&type={{../type}}" target="_blank">{{fileName}}  {{weekDay}}</a>
+                    <a class="delete" onclick="deleteFile(event)" id="{{fileName}}">删除</a>
                 </div>
                 {{/each}}
             </div>
         {{else}}
-            <h1 style="text-align: center;">暂无存储的数据。</h1>
+            <div>已清空。</div>
         {{/if}}
     </div>
 

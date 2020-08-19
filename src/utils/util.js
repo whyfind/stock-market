@@ -55,10 +55,10 @@ const getTemplate = (path) =>{
 }
 
 //读取模板
-const getHistory = (fileName) =>{
+const getMemory = (fileName) =>{
     var data = {}
     try{
-        data = fs.readFileSync(path.join(__dirname, '../history/' + fileName));
+        data = fs.readFileSync(path.join(__dirname, fileName));
         data = data.toString()
         data = JSON.parse(data)
     }catch(e){
@@ -67,20 +67,47 @@ const getHistory = (fileName) =>{
     }
     return data
 }
+
 //设置配置文件
-const setHistory = (webConfig, fileName) => {
-    fs.writeFile(path.join(__dirname, '../history/' + fileName), JSON.stringify(webConfig),  function(err) {
+const setMemory = (webConfig, fileName) => {
+    fs.writeFile(path.join(__dirname, fileName), JSON.stringify(webConfig),  function(err) {
         if (err) {
             return console.error(err);
         }
     });
 }
+
+//清除目录下的文件
+const clearMemory = (fileName) => {
+    var files = [];
+    var deletePath = path.join(__dirname, fileName)
+    if( fs.existsSync(deletePath) ) {
+        files = fs.readdirSync(deletePath);
+        files.forEach(function(file,index){
+            var curPath = deletePath + "/" + file;
+            if(fs.statSync(curPath).isDirectory()) { // recurse
+                clearMemory(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+    }
+}
+
+const clearMemoryItem = (fileName) => {
+    if(fs.existsSync(path.join(__dirname, fileName)) ){
+        fs.unlinkSync(path.join(__dirname, fileName))
+    }
+}
+
 module.exports = {
     getWebConfig: getWebConfig,
     setWebConfig: setWebConfig,
     getTemplate: getTemplate,
-    getHistory: getHistory,
-    setHistory: setHistory,
+    getMemory: getMemory,
+    setMemory: setMemory,
+    clearMemory: clearMemory,
+    clearMemoryItem: clearMemoryItem,
     getDayOfWeek: getDayOfWeek,
     formatDate: formatDate,
 }
