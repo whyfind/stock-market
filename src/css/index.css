@@ -1,6 +1,4 @@
-#index-container{
-    background: linear-gradient(to bottom, #f8f8f8 0%,#f6f4f4 100%);
-}
+
 .submitItem {
     width: 500px;
     margin: 20px auto;
@@ -23,10 +21,7 @@
     height: 30px;
 }
 
-.show-list{
-    max-width: 1000px;
-    margin: 0 auto;
-}
+
 .entry-list{
     text-align: center;
     width: 400px;

@@ -1,0 +1,26 @@
+#root{
+    width: 500px;
+    margin: 50px;
+}
+.info-title{
+
+}
+.info-title a{
+    float: right;
+    font-size: 15px;
+    color: rgb(0, 0, 238);
+    cursor: pointer;
+    font-weight: 500;
+}
+.info-list{
+
+}
+.info-item{
+    line-height: 30px;
+    font-size: 15px;
+}
+.info-list .delete{
+    float: right;
+    color: rgb(0, 0, 238);
+    cursor: pointer;
+}

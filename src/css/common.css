@@ -1,0 +1,8 @@
+#index-container{
+    background: linear-gradient(to bottom, #f8f8f8 0%,#f6f4f4 100%);
+    font-family: Microsoft YaHei
+}
+#root{
+    max-width: 1000px;
+    margin: 0 auto;
+}

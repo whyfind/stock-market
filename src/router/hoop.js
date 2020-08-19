@@ -18,13 +18,14 @@ module.exports = function (app) {
         var save = function(){
             if(map.shenzhen && map.shanghai){
                 var list = spiderFormat.listFilter(map.shenzhenList.concat(map.shanghList))
-                var mapList = util.getHistory()
+                var fileName = util.formatDate(new Date()) + '.txt'
+                var mapList = util.getHistory(fileName)
                 list.forEach(function (v) {
                     if(!mapList[v.id]){
                         mapList[v.id] = v
                     }
                 })
-                util.setHistory(mapList)
+                util.setHistory(mapList, fileName)
             }
         }
         timer = setInterval( function () {

@@ -14,20 +14,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Win</title>
-    <link rel="stylesheet" type="text/css" href="./index.css" />
+    <link rel="stylesheet" type="text/css" href="./common.css" />
+    <link rel="stylesheet" type="text/css" href="./cache.css" />
 </head>
 <body>
-    <h2>存储消息</h2><a target="_blank" onclick="settingMessage()">清除历史消息</a>
-    <div id="root">
-
-
-    </div>
+    <div id="root"></div>
 </body>
 
 <script type="application/javascript" src="./watermark.js"></script>
 <script type="application/javascript" src="./ajax.js"></script>
-
-
 
 <script type="application/javascript">
     function settingMessage(isSetting) {
@@ -46,25 +41,29 @@
             }
         })
     }
+    function deleteFile() {
+        
+    }
 </script>
 
 
 <script type="text/html" id="listTemplate">
-    {{#if list}}
-    <div class="show-list">
-        {{#each list}}
-        <div style="border-bottom: 1px dashed #999;">
-            <h1>{{index}}、{{title}}{{code}}</h1>
-            <p><h2 style="float:left;margin:0;">问：</h2><p style="line-height: 35px;font-size: 18px;">{{question}}</p></p>
-            <p><h2 style="float:left;margin:0;">答：</h2><p style="line-height: 35px;font-size: 18px;">{{text}}</p></p>
-            <p style="color: #1818fd;">{{time}}</p>
-        </div>
-        {{/each}}
+    <div>
+        <h2 class="info-title">存储消息列表<a target="_blank" onclick="settingMessage()">清除所有</a></h2>
+        {{#if list}}
+            <div class="info-list">
+                {{#each list}}
+                <div class="info-item">
+                    <a class="link" href="/getCache?date={{fileName}}" target="_blank">{{fileName}}  {{weekDay}}</a>
+                    <a class="delete" onclick="deleteFile">删除</a>
+                </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <h1 style="text-align: center;">暂无存储的数据。</h1>
+        {{/if}}
     </div>
-    {{else}}
-    <h1 style="text-align: center;">暂无存储的数据。</h1>
-    {{/if}}
-</script>
 
+</script>
 
 </html>
