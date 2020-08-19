@@ -82,20 +82,23 @@
 
 
 <script type="text/html" id="listTemplate">
-    {{#if list}}
-        <div class="show-list">
-            {{#each list}}
-            <div style="border-bottom: 1px dashed #999;">
-                <h1>{{index}}、{{title}}{{code}}</h1>
-                <p><h2 style="float:left;margin:0;">问：</h2><p style="line-height: 35px;font-size: 18px;">{{question}}</p></p>
-                <p><h2 style="float:left;margin:0;">答：</h2><p style="line-height: 35px;font-size: 18px;">{{text}}</p></p>
-                <p style="color: #1818fd;">{{time}}</p>
-            </div>
-            {{/each}}
-        </div>
-    {{else}}
-        <h1 style="text-align: center;">{{#if isCache}}暂无存储的数据。{{else}}暂无关键字匹配的数据。{{/if}}</h1>
-    {{/if}}
+  <div>
+      <h2>{{title}}</h2>
+      {{#if list}}
+      <div class="show-list">
+          {{#each list}}
+          <div style="border-bottom: 1px dashed #999;">
+              <h1>{{index}}、{{title}}{{code}}</h1>
+              <p><h2 style="float:left;margin:0;">问：</h2><p style="line-height: 35px;font-size: 18px;">{{question}}</p></p>
+              <p><h2 style="float:left;margin:0;">答：</h2><p style="line-height: 35px;font-size: 18px;">{{text}}</p></p>
+              <p style="color: #1818fd;">{{time}}</p>
+          </div>
+          {{/each}}
+      </div>
+      {{else}}
+      <div>暂无关键字匹配的数据。</div>
+      {{/if}}
+  </div>
 </script>
 
 <script type="text/html" id="settingKeyForm">

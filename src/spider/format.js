@@ -49,7 +49,7 @@ var listFilter = function (list) {
 }
 
 //统一根据数据渲染
-var renderList = function(list, isCache){
+var renderList = function(list, isCache, title){
     var arr = list
     var notification = "<script>"
     var webConfig = util.getWebConfig()
@@ -74,10 +74,8 @@ var renderList = function(list, isCache){
         html = notification + reload;
     }
 
-    var template = util.getTemplate(path.resolve(__dirname, '../index.html'))
-    let $ = cheerio.load(template, { decodeEntities: false });
-    var con = handlebars.compile($("#listTemplate").html())({list: arr,isCache: isCache});
-
+    let $ = util.getIndexPage();
+    var con = handlebars.compile($("#listTemplate").html())({list: arr,title: title});
     $('#root').append(html + con)
     return $.html()
 }

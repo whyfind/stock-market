@@ -15,7 +15,7 @@ module.exports = function (app) {
         }
         var all = function() {
             if(map.shenzhen && map.shanghai){
-                var html = spiderFormat.renderList(map.shenzhenList.concat(map.shanghList))
+                var html = spiderFormat.renderList(map.shenzhenList.concat(map.shanghList), false, '上证+深交')
                 res.send(html);
             }
         }

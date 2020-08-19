@@ -73,7 +73,11 @@ module.exports = function (app) {
             map[v].index = index + 1
             list.push(map[v])
         })
-        var html = spiderFormat.renderList(list, true)
+        var title = '备份信息列表'
+        if(type == "HISTORY"){
+            title = '存储信息列表'
+        }
+        var html = spiderFormat.renderList(list, true, title)
         res.send(html);
     })
 
