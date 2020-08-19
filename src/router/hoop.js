@@ -59,7 +59,7 @@ module.exports = function (app) {
                     save()
                 }
             )
-        }, 20000)
+        }, webConfig.coverTime || 30000)
     }
     console.log('开始信息备份~')
     startMemory()

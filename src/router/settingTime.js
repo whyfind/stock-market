@@ -11,6 +11,7 @@ module.exports=function(app){
         let $ = util.getIndexPage()
         $('body').append($('#settingTimeForm').html())
         $('#refreshTime').val( webConfig.refreshTime || "")
+        $('#coverTime').val( webConfig.coverTime || "")
         res.send($.html());
     })
     app.post('/submitSettingTime', function (req, res) {
@@ -25,7 +26,8 @@ module.exports=function(app){
             res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
             res.write("设置刷新时间成功:" + body.name + "秒");
             var webConfig = util.getWebConfig()
-            webConfig.refreshTime = body.name || ''
+            webConfig.refreshTime = body.refreshTime || ''
+            webConfig.coverTime = body.coverTime || ''
             util.setWebConfig(webConfig)
             res.end();
         });
