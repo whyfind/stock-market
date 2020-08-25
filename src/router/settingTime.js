@@ -24,7 +24,7 @@ module.exports=function(app){
             body = querystring.parse(body);
             // 设置响应头部信息及编码
             res.writeHead(200, {'Content-Type': 'text/html; charset=utf8'});
-            res.write("设置刷新时间成功:" + body.name + "秒");
+            res.write("设置刷新时间成功:" + body.refreshTime + "秒</br>" + "设置备份时间成功:" + body.coverTime + "秒");
             var webConfig = util.getWebConfig()
             webConfig.refreshTime = body.refreshTime || ''
             webConfig.coverTime = body.coverTime || ''

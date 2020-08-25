@@ -14,11 +14,11 @@ var typeMapDir = {
 }
 
 module.exports = function (app) {
-    //存储消息
+    //挂机消息
     app.get('/cache', function (req, res) {
         var dir = typeMapDir[req.query.type], title = ''
         if(req.query.type == 'HISTORY'){
-            title = '存储消息列表'
+            title = '挂机消息列表'
         }else if(req.query.type == 'RECOVER'){
             title = '备份消息列表'
         }
@@ -75,10 +75,9 @@ module.exports = function (app) {
         })
         var title = '备份信息列表'
         if(type == "HISTORY"){
-            title = '存储信息列表'
+            title = '挂机信息列表'
         }
         var html = spiderFormat.renderList(list, true, title)
         res.send(html);
     })
-
 }

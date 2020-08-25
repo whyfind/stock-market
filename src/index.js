@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, './css')));
 app.use(express.static(path.join(__dirname, './js')));
 
 var SHSZ = require('./router/SHSZ')(app) //上证深交
-var historyMessage = require('./router/cache')(app) //存储的历史消息操作
+var historyMessage = require('./router/cache')(app) //挂机的历史消息操作
 var keySetting = require('./router/settingKey')(app) //关键词设置
 var timeSetting = require('./router/settingTime')(app) //时间设置
 var hoop = require('./router/hoop')(app) //外挂

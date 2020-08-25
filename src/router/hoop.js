@@ -30,7 +30,7 @@ module.exports = function (app) {
                     }
                 })
                 util.setMemory(mapList, fileName)
-                //开启存储信息
+                //开启挂机信息
                 if(webConfig.isSettingMessage == 'yes'){
                     var fileName = '../history/' + util.formatDate(new Date()) + '.txt'
                     var mapList = util.getMemory(fileName)
@@ -59,7 +59,7 @@ module.exports = function (app) {
                     save()
                 }
             )
-        }, webConfig.coverTime || 30000)
+        }, (webConfig.coverTime * 1000) || 30000)
     }
     console.log('开始信息备份~')
     startMemory()
@@ -70,9 +70,9 @@ module.exports = function (app) {
         util.setWebConfig(webConfig)
 
         if(req.query.settingMessage == 'yes'){
-            console.log('开始信息存储功能~')
+            console.log('开始挂机功能~')
         }else{
-            console.log('关闭信息存储功能~')
+            console.log('关闭挂机功能~')
         }
         res.status(200)
         res.json({success: true})
