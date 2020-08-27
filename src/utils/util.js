@@ -18,26 +18,31 @@ function formatDate(date) {
     if (day.length < 2) day = '0' + day;
     return [year, month, day].join('-');
 }
-
+let config = null
 //读取配置文件
 const getWebConfig = () =>{
+    if(config){
+        return config
+    }
     var data = {}
     try{
         data = fs.readFileSync(path.join(__dirname, '../config/webConfig.json'));
         data = data.toString()
-        data = JSON.parse(data)
+        data = JSON.parse(data.toString())
+        config = data
     }catch(e){
         data = {}
-        console.log(e.message)
+        console.log('获取配置文件',e.message)
     }
     return data
 }
 
 //设置配置文件
 const setWebConfig = (webConfig) => {
+    config = webConfig
     fs.writeFile(path.join(__dirname, '../config/webConfig.json'), JSON.stringify(webConfig),  function(err) {
         if (err) {
-            return console.error(err);
+            return console.error('设置配置文件',err);
         }
     });
 }
@@ -50,7 +55,7 @@ const getTemplate = (path) =>{
         data = data.toString()
     }catch(e){
         data = ''
-        console.log(e.message)
+        console.log('读取模板',e.message)
     }
     return data
 }
@@ -64,7 +69,7 @@ const getMemory = (fileName) =>{
         data = JSON.parse(data)
     }catch(e){
         data = {}
-        console.log(e.message)
+        console.log('读取挂机内容',e.message)
     }
     return data
 }
@@ -73,7 +78,7 @@ const getMemory = (fileName) =>{
 const setMemory = (webConfig, fileName) => {
     fs.writeFile(path.join(__dirname, fileName), JSON.stringify(webConfig),  function(err) {
         if (err) {
-            return console.error(err);
+            return   console.log('设置挂机内容',err)
         }
     });
 }

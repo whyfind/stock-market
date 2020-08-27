@@ -11,6 +11,8 @@ var renderKey = function (content, key) {
 var listFilter = function (list,isCache) {
     var arr = []
     var webConfig = util.getWebConfig()
+    var filter = webConfig.filter.split(" ")
+    var defaultFilter = webConfig.defaultFilter.split(" ")
 
     list.forEach(function (v, index) {
         v.code =  v.code ? '('+v.code +')' : ''
@@ -22,8 +24,6 @@ var listFilter = function (list,isCache) {
         if(!webConfig.filter){
             arr.push(v)
         }else{
-            var filter = webConfig.filter.split(" ")
-            var defaultFilter = webConfig.defaultFilter.split(" ")
             filter.forEach(function(key){
                 var flag = false
                 defaultFilter.forEach(function(noItem){
